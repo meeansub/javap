@@ -9,7 +9,7 @@ public class Game {
 	public Game(){
 		user = new User();
 		ai = new Ai();
-		round = 0;
+		round = 1;
 	}
 	public Ai getAi(){
 		return ai;

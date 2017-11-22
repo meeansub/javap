@@ -5,15 +5,18 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Label;
 import java.awt.List;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import net.skhu.Game;
 
@@ -23,6 +26,8 @@ public class MainFrame extends JFrame {
 	private AiGUI aigui = new AiGUI();
 	private Game game;
 	private List list = new List();
+	private JLabel label;
+	private JTextField textField;
 	Button button;
 
 	public MainFrame(Game game) {
@@ -62,6 +67,7 @@ public class MainFrame extends JFrame {
 		button.setBounds(177, 382, 128, 29);
 		panel.add(button);
 		button.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				JPanel panel = gameView(game);
 				MainViewchange(panel);
@@ -80,7 +86,7 @@ public class MainFrame extends JFrame {
 		die.setBounds(170, 300, 128, 29);
 		Button cont = new Button("계속");
 		cont.setBounds(330, 300, 128, 29);
-		
+
 		panel.add(aigui.changeView(game));
 		panel.add(batting);
 		panel.add(die);
@@ -88,21 +94,63 @@ public class MainFrame extends JFrame {
 		panel.add(usergui.changeView(game, 0));
 		panel.add(list);
 
+		Button betBtn = new Button("입력");
+		betBtn.setBounds(243, 335, 50, 27);
+		panel.add(betBtn);
+		betBtn.setEnabled(false);
+
+		label = new JLabel();
+		label.setBounds(new Rectangle(86,310,120,79));
+		label.setText("배팅할 코인 입력: ");
+		panel.add(label);
+
+		JTextField inCoin = new JTextField();
+		inCoin.setColumns(3);
+		inCoin.setBounds(190, 337, 50, 25);
+		panel.add(inCoin);
+		inCoin.setEnabled(false);
 		
+		betBtn.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+
+				String s =inCoin.getText();
+				
+				JOptionPane.showMessageDialog(panel, s + "개의 코인이 입력됐습니다");
+
+				inCoin.setText("");
+			}
+
+		});
+		batting.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				betBtn.setEnabled(true);
+				inCoin.setEnabled(true);
+
+			}
+		});
+		
+
 		// die 버튼 클릭시
 		die.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 				panel.remove(usergui.im(game));
 				panel.add(usergui.changeView(game, 1));
 				changeText(game,1);
 				panel.repaint();
-				
+
 
 			}
 		});
 		cont.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				betBtn.setEnabled(false);
+				inCoin.setEnabled(false);
 				game.setRound();
 				panel.remove(usergui.im(game));
 				panel.remove(aigui.im(game));
@@ -111,6 +159,7 @@ public class MainFrame extends JFrame {
 				changeText(game,0);
 				panel.repaint();
 				
+
 
 			}
 		});
@@ -129,11 +178,15 @@ public class MainFrame extends JFrame {
 			int first = ((int) (Math.random() * 10)) % 2;
 			list.add("INDIAN 포커에 오신걸 환영합니다.");
 			list.add("1라운드를 시작하겠습니다.");
+			String s= String.format("User 코인: %d, Ai 코인: %d",game.getUser().getUserCoin(),game.getAi().getAiCoin());
+			list.add(s);
 			String msg = first == 1 ? "사용자가 먼저 배팅을 시작합니다." : "Ai가 먼저 배팅을 시작합니다.";
 			list.add(msg);
 			game.setRound();
 		} else {
 			list.add(game.getRound() + "라운드를 시작하겠습니다.");
+			String s= String.format("User 코인: %d, Ai 코인: %d",game.getUser().getUserCoin(),game.getAi().getAiCoin());
+			list.add(s);
 
 		}
 

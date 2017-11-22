@@ -22,4 +22,7 @@ public class User {
 	public List card(){
 		return cardList;
 	}
+	public int getUserCoin() {
+		return coin;
+	}
 }
