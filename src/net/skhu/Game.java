@@ -4,7 +4,7 @@ public class Game {
 	
 	private User user;
 	private Ai ai;
-	private int round;
+	static public int round;
 	
 	public Game(){
 		user = new User();

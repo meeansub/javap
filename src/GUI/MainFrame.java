@@ -109,16 +109,19 @@ public class MainFrame extends JFrame {
 		inCoin.setBounds(190, 337, 50, 25);
 		panel.add(inCoin);
 		inCoin.setEnabled(false);
-		
+
 		betBtn.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 
 				String s =inCoin.getText();
-				
-				JOptionPane.showMessageDialog(panel, s + "개의 코인이 입력됐습니다");
 
+				JOptionPane.showMessageDialog(panel, s + "개의 코인이 입력됐습니다");
 				inCoin.setText("");
+				String msg="User 배팅="+s;
+				int bet=Integer.parseInt(s);
+				game.getUser().betCoin(bet);
+				list.add(msg);
 			}
 
 		});
@@ -131,7 +134,7 @@ public class MainFrame extends JFrame {
 
 			}
 		});
-		
+
 
 		// die 버튼 클릭시
 		die.addActionListener(new ActionListener() {
@@ -142,6 +145,10 @@ public class MainFrame extends JFrame {
 				panel.add(usergui.changeView(game, 1));
 				changeText(game,1);
 				panel.repaint();
+				game.getUser().setCoin(game.getUser().getUserCoin()-1);
+				String dieMsg="die 하셨습니다 User의 코인이 하나 줄고 다음 라운드로 넘어갑니다.";
+				list.add(dieMsg);
+
 
 
 			}
@@ -158,7 +165,7 @@ public class MainFrame extends JFrame {
 				panel.add(usergui.changeView(game, 0));
 				changeText(game,0);
 				panel.repaint();
-				
+
 
 
 			}
@@ -174,19 +181,22 @@ public class MainFrame extends JFrame {
 			String msg = "사용자의 숫자는" + game.getUser().number(game);
 			list.add(msg);
 		}
-		else if (game.getRound() == 0) {
+		else if (game.getRound() == 1) {
 			int first = ((int) (Math.random() * 10)) % 2;
 			list.add("INDIAN 포커에 오신걸 환영합니다.");
 			list.add("1라운드를 시작하겠습니다.");
-			String s= String.format("User 코인: %d, Ai 코인: %d",game.getUser().getUserCoin(),game.getAi().getAiCoin());
-			list.add(s);
-			String msg = first == 1 ? "사용자가 먼저 배팅을 시작합니다." : "Ai가 먼저 배팅을 시작합니다.";
-			list.add(msg);
-			game.setRound();
+			String betFirstMsg = first == 1 ? "사용자가 먼저 배팅을 시작합니다." : "Ai가 먼저 배팅을 시작합니다.";
+			list.add(betFirstMsg);
+			String currentCoin= String.format("User 코인: %d, Ai 코인: %d",game.getUser().getUserCoin(),game.getAi().getAiCoin());
+			list.add(currentCoin);
+
 		} else {
-			list.add(game.getRound() + "라운드를 시작하겠습니다.");
-			String s= String.format("User 코인: %d, Ai 코인: %d",game.getUser().getUserCoin(),game.getAi().getAiCoin());
-			list.add(s);
+			if(game.getRound() !=21) {
+				list.add("\n");
+				list.add(game.getRound() + "라운드를 시작하겠습니다.");
+				String s= String.format("User 코인: %d, Ai 코인: %d",game.getUser().getUserCoin(),game.getAi().getAiCoin());
+				list.add(s);
+			}
 
 		}
 

@@ -28,4 +28,8 @@ public class Ai {
 	public int getAiCoin() {
 		return coin;
 	}
+	//배팅 할지 안할지 결정
+	
+		
+	
 }
