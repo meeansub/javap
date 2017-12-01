@@ -10,8 +10,9 @@ import javax.swing.JPanel;
 import net.skhu.Game;
 
 public class UserGUI {
-	
+
 	private JPanel panel;
+	private ImageIcon icon;
 	
 	public JPanel changeView(Game game,int check){
 		panel = new JPanel();
@@ -33,7 +34,10 @@ public class UserGUI {
 		}
 		else{
 			JLabel userCard =new JLabel("");
-			ImageIcon icon=new ImageIcon(getClass().getResource("/image/1_"+list.get(round-1)+".png"));
+			if(round<=10)
+				icon=new ImageIcon(getClass().getResource("/image/1_"+list.get(round-1)+".png"));
+			else if(round>10)
+				icon=new ImageIcon(getClass().getResource("/image/1_"+list.get(round-10)+".png"));
 			userCard.setIcon(icon);
 			icon.setImage(icon.getImage().getScaledInstance(180, 200, Image.SCALE_SMOOTH));
 			userCard.setBounds(25, 35, 250, 250);

@@ -179,6 +179,10 @@ public class MainFrame extends JFrame{
 		cont.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(game.getRound()==11) {
+					game.getAi().aiRechargeDeck();
+					game.getUser().userRechargeDeck();
+				}
 				betBtn.setEnabled(false);
 				inCoin.setEnabled(false);
 				game.setRound();
@@ -225,7 +229,7 @@ public class MainFrame extends JFrame{
 
 		}
 		else if (game.getRound()>1
-				&&game.getRound() <=10) //10라운드 까지
+				&&game.getRound() <=10)//10라운드 까지
 		{ 
 			int first = ((int) (Math.random() * 2)) +1;
 			list.add(String.format("%d라운드를 시작하겠습니다.", game.getRound()));
@@ -261,7 +265,7 @@ public class MainFrame extends JFrame{
             list.add(s);
       }
 		 */
-		else //라운드 수가 10초과인 라운드 넘어가면 
+		else //라운드 수가 20초과인 라운드 넘어가면 
 			list.add(game.winner());
 	}
 
