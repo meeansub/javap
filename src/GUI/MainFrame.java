@@ -118,7 +118,6 @@ public class MainFrame extends JFrame{
 		inCoin.setBounds(190, 337, 50, 25);
 		panel.add(inCoin);
 		inCoin.setEnabled(false);
-
 		//		if(aiDie ==5)
 		//		{
 		//			panel.remove(usergui.im(game));
@@ -128,7 +127,8 @@ public class MainFrame extends JFrame{
 		//			game.getUser().setCoin(game.getUser().getUserCoin()+1);
 		//			game.getAi().setCoin(game.getAi().getAiCoin()-1);
 		//		}
-
+		additionalBets();
+		
 		betBtn.addActionListener(new ActionListener() {
 
 			@Override
@@ -152,7 +152,7 @@ public class MainFrame extends JFrame{
 					list.add(msg);
 					if(userBet>0) {
 						battleAiWithUser();
-						
+						additionalBets();
 					}
 				}
 			}
@@ -217,8 +217,6 @@ public class MainFrame extends JFrame{
 			}
 			else {//ai 배팅 시작
 				battleAiWithUser();
-
-
 			}
 			
 
@@ -412,5 +410,41 @@ public class MainFrame extends JFrame{
 			list.add(String.format("die 하셨습니다 User코인이 %d 줄고 다음라운드로 넘어갑니다",totalUserBet));
 			totalUserBet=0;
 		}
+	}
+	//추가 배팅 구현하기
+	public JPanel additionalBets()
+	{
+			if(count < 2 && game.getRound()>1) //추가배팅 3회로 제한하기
+			{
+				//배팅 누를때마다 위에 addActionListener호출 된다
+				list.add("사용자는 추가배팅 원하시면 배팅누르고 입력하세요!");
+				count ++;
+			}
+			else if(count ==3 && game.getRound()>1)//추가배팅이 3회가 지나면
+			{
+				if(game.getUser().number(game) >game.getAi().number(game))//내카드가 더크다면
+				{
+					panel.remove(usergui.im(game));
+					panel.add(usergui.changeView(game, 1));
+					changeText(game,1);
+					panel.repaint();
+					game.getUser().setCoin(game.getUser().getUserCoin()+totalAiBet); //내가 배팅했던 코인과 ai배팅했던코인먹기
+					game.getAi().setCoin(game.getAi().getAiCoin()-totalAiBet);
+					count = 0; //0으로 초기화
+					list.add("유저가 승리했습니다!");
+				}
+				else //AI카드가 더 크다면 
+				{
+					panel.remove(usergui.im(game));
+					panel.add(usergui.changeView(game, 1));
+					changeText(game,1);
+					panel.repaint();
+					game.getAi().setCoin(game.getAi().getAiCoin()+totalUserBet);
+					game.getUser().setCoin(game.getUser().getUserCoin()-totalUserBet);
+					count = 0; //0으로 초기화
+					list.add("AI가 승리했습니다");
+				}
+			}
+		return panel;
 	}
 }

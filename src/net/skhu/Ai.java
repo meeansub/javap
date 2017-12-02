@@ -24,7 +24,7 @@ public class Ai {
 		usercardList.add(usercard);
 	}
 	public int number(Game game){
-		return usercardList.get(game.getRound()-1);
+		return cardList.get(game.getRound()-1);
 	}
 	public int getAiCoin() {
 		return coin;
