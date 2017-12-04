@@ -11,11 +11,11 @@ import net.skhu.Game;
 
 public class UserGUI {
 
-	private JPanel panel;
+	private JPanel panel = new JPanel();
 	private ImageIcon icon;
-	
+
 	public JPanel changeView(Game game,int check){
-		panel = new JPanel();
+
 		JLabel userCard =new JLabel("");
 		panel.setLayout(null);
 		panel.setBounds(0,0,250,280);

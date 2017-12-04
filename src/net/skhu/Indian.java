@@ -46,10 +46,10 @@ import java.awt.Button;
 public class Indian{
 
 	private JFrame frame;
-	
-	
+
+
 	private Game game = new Game();
-	
+
 	private Button button;
 	/**
 	 * Launch the application.
@@ -59,7 +59,7 @@ public class Indian{
 			public void run() {
 				try {
 					Indian window = new Indian();
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -80,16 +80,16 @@ public class Indian{
 	private void initialize() {
 		MainFrame frame = new MainFrame(game);
 		frame.setBounds(100, 100, 500, 500);
-		
+
 		JPanel panel = frame.mainView();
 		frame.getContentPane().add(panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		
-		
-	}
-	
 
-	
-	
+
+	}
+
+
+
+
 }

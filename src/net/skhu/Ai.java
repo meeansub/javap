@@ -10,7 +10,7 @@ public class Ai {
 	private List<Integer> cardList;
 	private List<Integer> usercardList;
 	private int coin;
-	
+
 	public Ai(){
 		cardList=Arrays.asList(1,2,3,4,5,6,7,8,9,10);
 		usercardList = new ArrayList<>();
@@ -41,27 +41,27 @@ public class Ai {
 		return this.coin -=coin;
 	}
 	//내카드를 보고 있는 ai가 내카드가 크다면 배팅 갯수적게하고 내카드가 작다면 배팅 갯수 높임(배팅할 확률)
-	public int aiBattingBattle(int userCard)
+	public int aiBattingBattle(int userCard,int userBet)
 	{
 		int bet =0;
 		if(userCard == 1) //내카드가 1이라면 AI는 배팅(카드 수가 1이니까 다이가 없음)
 		{
-			bet = (int)(Math.random()*5)+1;	
+			bet = (int)(Math.random()*getAiCoin())+userBet;   
 			return bet;
 		}
 		else if(userCard>=2 && userCard<=5) 
 		{
-			bet = (int)(Math.random()*3)+1;
+			bet = (int)(Math.random()*(userBet+3))+userBet;
 			return bet;
 		}
 		else if(userCard<=6 && userCard<=8)
 		{
-			bet = (int)(Math.random()*1)+1;	
+			bet = (int)(Math.random()*(userBet+1))+userBet;   
 			return bet;
 		}
 		else
 		{
-			bet = (int)(Math.random()*1)+1;	
+			bet = (int)(Math.random()*(userBet+1))+userBet;   
 			return bet;
 		}
 	}
@@ -78,15 +78,15 @@ public class Ai {
 		}
 		else if(userCard<=6 && userCard<=8)
 		{
-			die = (int)(Math.random()*1)+1;	
+			die = (int)(Math.random()*1)+1;   
 			return die;
 		}
 		else
 		{
-			die = (int)(Math.random()*3)+1;		
+			die = (int)(Math.random()*3)+1;      
 			return die;
 		}
 
-			
+
 	}
 }
