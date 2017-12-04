@@ -15,6 +15,12 @@ public class User {
 		coin = 20;
 		Collections.shuffle(cardList);
 	}
+	
+	public void userRechargeDeck()
+	{
+		this.cardList = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10);
+		Collections.shuffle(cardList);
+	}
 	public int getUserCard() {
 		nowUser=cardList.get(Game.round);
 		return nowUser;
