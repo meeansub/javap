@@ -1,3 +1,4 @@
+
 package net.skhu;
 
 public class Game {
@@ -41,7 +42,12 @@ public class Game {
 
 	public String coinExhaustion()
 	{
-		return user.getUserCoin()<=0 ? "ai가 승리하고 user가 졌습니다" : "user가 승리하고 ai가 졌습니다";
+		if(user.getUserCoin()<=0)
+			return "ai가 승리하고 user가 졌습니다";
+		else// if(ai.getAiCoin()<=0)
+			return "user가 승리하고 ai가 졌습니다";
+		
+		//return user.getUserCoin()<=0 ? "ai가 승리하고 user가 졌습니다" : "user가 승리하고 ai가 졌습니다";
 	}
 
 }

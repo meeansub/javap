@@ -79,7 +79,7 @@ public class Indian{
 	 */
 	private void initialize() {
 		MainFrame frame = new MainFrame(game);
-		frame.setBounds(100, 100, 500, 500);
+		frame.setBounds(650, 300, 500, 500);
 
 		JPanel panel = frame.mainView();
 		frame.getContentPane().add(panel);

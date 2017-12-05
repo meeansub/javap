@@ -119,16 +119,7 @@ public class MainFrame extends JFrame {
 		panel.add(inCoin);
 		inCoin.setEnabled(false);
 
-		// if(aiDie ==5)
-		// {
-		// panel.remove(usergui.im(game));
-		// panel.add(usergui.changeView(game, 1));
-		// changeText(game,1);
-		// panel.repaint();
-		// game.getUser().setCoin(game.getUser().getUserCoin()+1);
-		// game.getAi().setCoin(game.getAi().getAiCoin()-1);
-		// }
-
+		//배팅에서 입력 버튼 눌렀을때 이벤트, user가 배팅하면 그에따라 ai가 배팅 or 다이
 		betBtn.addActionListener(new ActionListener() {
 
 			@Override
@@ -145,7 +136,16 @@ public class MainFrame extends JFrame {
 					list.add("배팅 건 숫자가 더많습니다!");
 					totalUserBet -= userBet;
 				}
-
+				//ai가 배팅을 하였는데 user가 같은 수의 배팅을 하였을때 카드를 비교해서 승자 출력
+				else if(totalAiBet!=0&&totalUserBet!=0&&totalAiBet==totalUserBet) {
+					list.add(msg);
+					list.add("user와 ai가 배팅한 수가 같습니다.");
+					roundWinner(/*totalUserBet,totalAiBet*/);
+				}
+				else if(game.getUser().getUserCoin()==totalUserBet&&totalAiBet>0) {
+					list.add(msg);
+					roundWinner();
+				}
 				else {
 					// *****************************************************************
 					System.out.println("유저 배팅값: " + userBet + " 유저토탈 배팅값: " + totalUserBet);
@@ -158,6 +158,8 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
+
+		//배팅 버튼 눌렀을때 입력버튼과 숫자 입력창 활성화
 		batting.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -165,10 +167,12 @@ public class MainFrame extends JFrame {
 				inCoin.setEnabled(true);
 			}
 		});
-		// die 버튼 클릭시
+
+		// die 버튼 클릭시 이벤트, user가 다이, 유저카드 보여주고 ai 승리
 		die.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				//라운드가 끝났으니 유저의 카드 보여주기
 				usergui.im(game).removeAll();
 				//panel.remove(usergui.im(game));
 				panel.add(usergui.changeView(game, 1));
@@ -178,6 +182,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		//계속 버튼 눌렀을 때 이벤트, 라운드가 바뀌고 카드 바뀜
 		cont.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -188,16 +193,21 @@ public class MainFrame extends JFrame {
 				betBtn.setEnabled(false);
 				inCoin.setEnabled(false);
 				game.setRound();         
-				usergui.im(game).removeAll();
 
+				//라운드가 끝났으니 유저의 카드 보여주기
+				//ai의 카드도 바꾸기
+				usergui.im(game).removeAll();
 				//panel.remove(usergui.im(game));
 				panel.remove(aigui.im(game));
 				panel.add(aigui.changeView(game));
-
 				panel.add(usergui.changeView(game, 0));
-
 				changeText(game, 0);
 				panel.repaint();
+				
+				totalUserBet=0;
+				totalAiBet=0;
+				userBet=0;
+				aiBet=0;
 
 			}
 		});
@@ -209,16 +219,18 @@ public class MainFrame extends JFrame {
 	public void changeText(Game game, int check) {
 		list.setBounds(0, 366, 484, 85);
 		if (check == 1) {
-			String msg = "사용자의 숫자는" + game.getUser().number(game);
+			String msg = "사용자의 숫자는"+ game.getUser().number(game);
 			list.add(msg);
 		} else if (game.getRound() == 1) {
 
 			int first = 0;//((int) (Math.random() * 2)) + 1;
 			list.add("INDIAN 포커에 오신걸 환영합니다.");
+			list.add("\n");
 			list.add(String.format("%d라운드를 시작하겠습니다.", game.getRound()));
 			String currentCoin = String.format("User 코인: %d, Ai 코인: %d", game.getUser().getUserCoin(),
 					game.getAi().getAiCoin());
 			list.add(currentCoin);
+			list.add("\n");
 			String betFirstMsg = first == 1 ? "사용자가 먼저 배팅을 시작합니다" : "Ai가 먼저 배팅을 시작합니다.";
 			list.add(betFirstMsg);
 			if (first == 1) // 사용자 배팅 시작
@@ -232,11 +244,13 @@ public class MainFrame extends JFrame {
 		} else if (game.getRound() > 1 && game.getRound() <= 20)// 10라운드 까지
 		{
 			int first = ((int) (Math.random() * 2)) + 1;
+			list.add("\n");
 			list.add(String.format("%d라운드를 시작하겠습니다.", game.getRound()));
 			String currentCoin = String.format("User 코인: %d, Ai 코인: %d", game.getUser().getUserCoin(),
 					game.getAi().getAiCoin());
 			list.add(currentCoin);
 			String betFirstMsg = first == 1 ? "사용자가 먼저 배팅을 시작합니다" : "Ai가 먼저 배팅을 시작합니다.";
+			list.add("\n");
 			list.add(betFirstMsg);
 			if (first == 1) // 사용자 배팅 시작
 			{
@@ -250,14 +264,7 @@ public class MainFrame extends JFrame {
 			System.out.println("totalUserBet: " + totalUserBet + " userBet: " + userBet + " totalAiBet: " + totalAiBet);
 			// *******************************************
 		}
-		/*
-		 * 일단 대기 else if(game.getRound() <=10)//10라운드 수가 아니라면 {
-		 * if(game.exhaustion() == true) { list.add(game.coinExhaustion());
-		 * return ; } list.add("\n"); list.add(game.getRound() +
-		 * "라운드를 시작하겠습니다."); String s=
-		 * String.format("User 코인: %d, Ai 코인: %d",game.getUser().getUserCoin(),
-		 * game.getAi().getAiCoin()); list.add(s); }
-		 */
+
 		else // 라운드 수가 20초과인 라운드 넘어가면
 			list.add(game.winner());
 	}
@@ -275,14 +282,24 @@ public class MainFrame extends JFrame {
 				// 배팅 건 갯수가 더크다면
 				list.add("ai가 배팅을 자기 코인보다 많이 하려고 합니다!, 유저에게 배팅 걸 기회가 넘어 갑니다");
 				totalAiBet -= aiBet;
-				
 
+
+			}
+			//user가 배팅을하였는데 ai가 배팅한 값이 같으면 카드값을 비교해서 결과를 출력해야 한다.
+			else if(totalAiBet!=0&&totalUserBet!=0&&totalAiBet==totalUserBet) {
+				list.add(ai);
+				list.add("ai와 user가 배팅한 수가 같습니다");
+				roundWinner(/*totalUserBet,totalAiBet*/);
+			}
+			else if(game.getAi().getAiCoin()==totalAiBet&&totalUserBet>0) {
+				list.add(ai);
+				roundWinner();
 			}
 			else
 				list.add(ai);
 
 			// ************************************************************
-			System.out.println("aiBet값: " + aiBet + " 토탈aiBet값: " + totalAiBet);
+			System.out.println("aiBet값: " + aiBet + " totalAiBet값: " + totalAiBet);
 			// **************************************************************
 		} else // 죽을 확률이 더크다면
 		{
@@ -293,6 +310,7 @@ public class MainFrame extends JFrame {
 				list.add(message);
 				aiDieCheck(aiDie);
 				aiDie = 0;
+
 			}
 
 		}
@@ -306,8 +324,9 @@ public class MainFrame extends JFrame {
 				game.getAi().aiBetCoin(1);
 				count = 0; // 0으로초기화
 				list.add("유저가 승리했습니다!");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
 				usergui.im(game).removeAll();
-				//panel.remove(usergui.im(game));
 				panel.add(usergui.changeView(game, 1));
 				changeText(game, 1);
 				panel.repaint();
@@ -317,8 +336,9 @@ public class MainFrame extends JFrame {
 				game.getAi().aiBetCoin(1);
 				count = 0; // 0으로초기화
 				list.add("유저가 승리했습니다!");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
 				usergui.im(game).removeAll();
-				//panel.remove(usergui.im(game));
 				panel.add(usergui.changeView(game, 1));
 				changeText(game, 1);
 				panel.repaint();
@@ -326,35 +346,26 @@ public class MainFrame extends JFrame {
 				totalUserBet = 0;
 				userBet = 0;
 
-			} else if (aiBet > 0 || userBet > 0) // 배팅을 걸었는데 AI가 죽었다면 AI가배팅건
-				// 코인들과 user가 그코인들을 가져가야 한다
+			} else if (aiBet > 0 || userBet > 0) // 배팅을 걸었는데 AI가 죽었다면 AI가배팅건 코인들과 user가 그코인들을 가져가야 한다
 			{
 				game.getUser().setCoin(game.getUser().getUserCoin() - userBet + totalAiBet + userBet);
 				game.getAi().setCoin(game.getAi().getAiCoin() - totalAiBet);
 				count = 0; // 0으로초기화
 				list.add("유저가 승리했습니다!");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
 				usergui.im(game).removeAll();
-				//panel.remove(usergui.im(game));
 				panel.add(usergui.changeView(game, 1));
 				changeText(game, 1);
 				panel.repaint();
 
+				//배팅한값 다 초기화
 				aiBet = 0;
 				totalUserBet = 0;
 				userBet = 0;
 				totalAiBet = 0;
 			}
-			// else //배팅을 안걸고 죽었다면
-			// {
-			// game.getUser().setCoin(game.getUser().getUserCoin()+1);
-			// game.getAi().aiBetCoin(1);
-			// count = 0; //0으로초기화
-			// list.add("유저가 승리했습니다!");
-			// panel.remove(usergui.im(game));
-			// panel.add(usergui.changeView(game, 1));
-			// changeText(game,1);
-			// panel.repaint();
-			// }
+
 		}
 		// AI가 배팅걸었다면
 		else {
@@ -369,29 +380,31 @@ public class MainFrame extends JFrame {
 				// list.add("추가 배팅 3회초과");
 				// list.add(String.format("game.getAi().number()는 %d",
 				// game.getAi().number(game)));
-				if (game.getUser().number(game) > game.getAi().number(game))// 내카드가
-					// 더크다면
+
+				//user의 카드가 ai의 카드보다 클때
+				if (game.getUser().number(game) > game.getAi().number(game))
 				{
+					//라운드가 끝났으니 유저의 카드 보여주기
 					usergui.im(game).removeAll();
-					//panel.remove(usergui.im(game));
 					panel.add(usergui.changeView(game, 1));
 					changeText(game, 1);
 					panel.repaint();
-					game.getUser().setCoin(game.getUser().getUserCoin() + totalAiBet); // 내가
-					// 배팅했던
-					// 코인과
-					// ai배팅했던코인먹기
+
+					//내가 배팅했던 코인과 ai배팅했던코인먹기
+					game.getUser().setCoin(game.getUser().getUserCoin() + totalAiBet); 
 					game.getAi().setCoin(game.getAi().getAiCoin() - totalAiBet);
 					count = 0; // 0으로 초기화
 					list.add("유저가 승리했습니다!");
 
 				} else // AI카드가 더 크다면
 				{
+					//라운드가 끝났으니 유저의 카드 보여주기
 					usergui.im(game).removeAll();
-					//panel.remove(usergui.im(game));
 					panel.add(usergui.changeView(game, 1));
 					changeText(game, 1);
 					panel.repaint();
+
+					//ai가 이겼으므로 user가 배팅한 코인 ai가 먹는다
 					game.getAi().setCoin(game.getAi().getAiCoin() + totalUserBet);
 					game.getUser().setCoin(game.getUser().getUserCoin() - totalUserBet);
 					count = 0; // 0으로 초기화
@@ -415,7 +428,166 @@ public class MainFrame extends JFrame {
 			game.getUser().setCoin(game.getUser().getUserCoin() - totalUserBet);
 			game.getAi().setCoin(game.getAi().getAiCoin() + totalUserBet);
 			list.add(String.format("die 하셨습니다 User코인이 %d 줄고 다음라운드로 넘어갑니다", totalUserBet));
-			totalUserBet = 0;
+
 		}
+		totalUserBet =0;
+		totalAiBet=0;
 	}
+
+	//서로 배팅했을때 상황에 따라 승자 결과
+	public void roundWinner(/*int userTBcoin, int aiTBcoin*/) {
+		//user가 총 배팅한 코인수와 ai가 총 배팅한 코인 수가 같으면
+		//if(userTBcoin==aiTBcoin) {
+		if(totalUserBet==totalAiBet) {
+			//user와 ai의 카드를 비교한다 
+
+			//user의 카드가 더크면!
+			if(game.getUser().number(game)>game.getAi().number(game)) {
+				list.add("user 카드가 ai의 카드보다 크므로 user 승리");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
+				usergui.im(game).removeAll();
+				panel.add(usergui.changeView(game, 1));
+				changeText(game, 1);
+				panel.repaint();
+
+				//user가 이겼으니 ai가 총 배팅했던코인먹기
+				game.getUser().setCoin(game.getUser().getUserCoin() + totalAiBet); 
+				//ai가 졌으므로 ai가 가지고 있는 코인에서  총 배팅한 코인을 뺀다.
+				game.getAi().setCoin(game.getAi().getAiCoin() - totalAiBet);
+
+				
+
+			}
+			//ai의 카드가 더크면!
+			else if(game.getUser().number(game)<game.getAi().number(game)) {
+				list.add("ai 카드가 user의 카드보다 크므로 ai 승리");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
+				usergui.im(game).removeAll();
+				panel.add(usergui.changeView(game, 1));
+				changeText(game, 1);
+				panel.repaint();
+
+				//user가 졌으므로 가지고 있는 코인에서 배팅한 코인을 뺀다.
+				game.getUser().setCoin(game.getUser().getUserCoin() - totalUserBet);
+				//ai가 이겼으므로 user가 배팅한 코인을 먹는다.
+				game.getAi().setCoin(game.getAi().getAiCoin() + totalUserBet);
+
+				
+
+			}
+		}
+
+
+		//ai가 코인을 배팅에 올인
+		else if(game.getAi().getAiCoin()==totalAiBet) {
+			//user의 카드가 더크면!
+			if(game.getUser().number(game)>game.getAi().number(game)) {
+				list.add("user 카드가 ai의 카드보다 크므로 user 승리");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
+				usergui.im(game).removeAll();
+				panel.add(usergui.changeView(game, 1));
+				changeText(game, 1);
+				panel.repaint();
+
+				//user가 이겼으니 ai가 총 배팅했던코인먹기
+				game.getUser().setCoin(game.getUser().getUserCoin() + totalAiBet); 
+				//ai가 졌으므로 ai가 가지고 있는 코인에서  총 배팅한 코인을 뺀다.
+				game.getAi().setCoin(game.getAi().getAiCoin() - totalAiBet);
+				
+				//ai가 코인을 올인했고, 카드비교시 user가 이겼고, ai가 코인을 다 소진하면
+				if(game.getAi().getAiCoin()==0) {
+					list.add("ai가 코인을 모두 소진하였습니다. 게임이 끝났습니다");
+					list.add(game.coinExhaustion());
+				}
+
+				
+
+			}
+			//ai의 카드가 더크면!
+			else if(game.getUser().number(game)<game.getAi().number(game)) {
+				list.add("ai 카드가 user의 카드보다 크므로 ai 승리");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
+				usergui.im(game).removeAll();
+				panel.add(usergui.changeView(game, 1));
+				changeText(game, 1);
+				panel.repaint();
+
+				//user가 졌으므로 가지고 있는 코인에서 배팅한 코인을 뺀다.
+				game.getUser().setCoin(game.getUser().getUserCoin() - totalUserBet);
+				//ai가 이겼으므로 user가 배팅한 코인을 먹는다.
+				game.getAi().setCoin(game.getAi().getAiCoin() + totalUserBet);
+				
+				//ai가 코인을 올인했는데 카드비교했을때 ai가 이기고, user가 코인을 다 소비하면
+				if(game.getUser().getUserCoin()==0) {
+					list.add("user가 코인을 모두 소비했습니다. 게임이 끝났습니다");
+					list.add(game.coinExhaustion());
+				}
+
+				
+
+			}
+
+		}
+		//user가 코인을 올인
+		else if(game.getUser().getUserCoin()==totalUserBet) {
+			//user의 카드가 더크면!
+			if(game.getUser().number(game)>game.getAi().number(game)) {
+				list.add("user 카드가 ai의 카드보다 크므로 user 승리");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
+				usergui.im(game).removeAll();
+				panel.add(usergui.changeView(game, 1));
+				changeText(game, 1);
+				panel.repaint();
+
+				//user가 이겼으니 ai가 총 배팅했던코인먹기
+				game.getUser().setCoin(game.getUser().getUserCoin() + totalAiBet); 
+				//ai가 졌으므로 ai가 가지고 있는 코인에서  총 배팅한 코인을 뺀다.
+				game.getAi().setCoin(game.getAi().getAiCoin() - totalAiBet);
+
+				//user가 코인을 올인했고, 카드비교시 user가 이겼고, ai가 코인을 다 소진하면
+				if(game.getAi().getAiCoin()==0) {
+					list.add("ai가 코인을 모두 소진하였습니다. 게임이 끝났습니다");
+					list.add(game.coinExhaustion());
+				}
+
+				
+
+			}
+			//ai의 카드가 더크면!
+			else if(game.getUser().number(game)<game.getAi().number(game)) {
+				list.add("ai 카드가 user의 카드보다 크므로 ai 승리");
+
+				//라운드가 끝났으니 유저의 카드 보여주기
+				usergui.im(game).removeAll();
+				panel.add(usergui.changeView(game, 1));
+				changeText(game, 1);
+				panel.repaint();
+
+				//user가 졌으므로 가지고 있는 코인에서 배팅한 코인을 뺀다.
+				game.getUser().setCoin(game.getUser().getUserCoin() - totalUserBet);
+				//ai가 이겼으므로 user가 배팅한 코인을 먹는다.
+				game.getAi().setCoin(game.getAi().getAiCoin() + totalUserBet);
+
+
+				//user가 코인을 올인했는데 카드비교했을때 ai가 이기면
+				if(game.getUser().getUserCoin()==0) {
+					list.add("user가 코인을 모두 소비했습니다. 게임이 끝났습니다");
+					list.add(game.coinExhaustion());
+				}
+				
+
+			}
+
+		}
+		totalUserBet=0;
+		userBet=0;
+		totalAiBet=0;
+		aiBet=0;
+	}
+	
 }
