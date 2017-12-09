@@ -38,7 +38,7 @@ public class User {
 		if(Game.round<=10)
 			return cardList.get(game.getRound()-1);
 		else
-			return cardList.get(game.getRound()-10);
+			return cardList.get(game.getRound()-11);
 	}
 
 	public List card(){

@@ -31,7 +31,10 @@ public class Ai {
       return usercardList.get(game.getRound()-1);
    }
    public int number(Game game){
-      return cardList.get(game.getRound()-1);
+	   if(Game.round<=10)
+			return cardList.get(game.getRound()-1);
+		else
+			return cardList.get(game.getRound()-11);
    }
    public int getAiCoin() {
       return coin;
@@ -47,27 +50,53 @@ public class Ai {
    public int aiBattingBattle(int userCard,int userBet)
    {
       int bet =0;
+      int rebet =0; //ai가 0을걸때 다시 걸게 할 확률
       if(userCard == 1) //내카드가 1이라면 AI는 배팅(카드 수가 1이니까 다이가 없음)
       {
-         bet = (int)(Math.random()*getAiCoin())+userBet;   
-         return bet;
+         bet = (int)(Math.random()*(userBet+2))+userBet;
+         if(bet ==0) //ai가 배팅을 0을건다면 0을 못걸게 해야되니까
+         {
+            rebet =(int)(Math.random()*(userBet+2))+userBet+1;
+            return rebet;
+         }
+         else
+            return bet;
       }
       else if(userCard>=2 && userCard<=5) 
       {
-         bet = (int)(Math.random()*(userBet+3))+userBet;
-         return bet;
+         bet = (int)(Math.random()*(userBet+1))+userBet;
+         if(bet == 0)//ai가 배팅을 0을건다면 0을 못걸게 해야되니까
+         {
+            rebet = (int)(Math.random()*(userBet+1))+userBet+1;
+            return rebet;
+         }
+         else   
+            return bet;
       }
       else if(userCard<=6 && userCard<=8)
       {
-         bet = (int)(Math.random()*(userBet+1))+userBet;   
-         return bet;
+         bet = (int)(Math.random()*(userBet))+userBet;   
+         if(bet == 0)//ai가 배팅을 0을건다면 0을 못걸게 해야되니까
+         {
+            rebet = (int)(Math.random()*(userBet))+userBet+1;
+            return rebet;
+         }
+         else
+            return bet;
       }
       else
       {
-         bet = (int)(Math.random()*(userBet+1))+userBet;   
-         return bet;
+         bet = (int)(Math.random()*(userBet))+userBet;
+         if(bet == 0) //ai가 배팅을 0을건다면 0을 못걸게 해야되니까
+         {
+            rebet = (int)(Math.random()*(userBet))+userBet+1;
+            return rebet;
+         }
+         else
+            return bet;
       }
    }
+   
    //ai다이확률
    public int aiDiePercentage(int userCard)
    {
@@ -89,7 +118,6 @@ public class Ai {
          die = (int)(Math.random()*3)+1;      
          return die;
       }
-
          
    }
 }

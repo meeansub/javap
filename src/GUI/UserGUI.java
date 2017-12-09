@@ -37,7 +37,7 @@ public class UserGUI {
 			if(round<=10)
 				icon=new ImageIcon(getClass().getResource("/image/1_"+list.get(round-1)+".png"));
 			else if(round>10)
-				icon=new ImageIcon(getClass().getResource("/image/1_"+list.get(round-10)+".png"));
+				icon=new ImageIcon(getClass().getResource("/image/1_"+list.get(round-11)+".png"));
 			userCard.setIcon(icon);
 			icon.setImage(icon.getImage().getScaledInstance(180, 200, Image.SCALE_SMOOTH));
 			userCard.setBounds(25, 35, 250, 250);

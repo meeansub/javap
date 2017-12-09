@@ -4,6 +4,7 @@ package net.skhu;
 public class Game {
 	private User user;
 	private Ai ai;
+	private int drawCoin;
 	static public int round;
 
 	public Game(){
@@ -25,6 +26,13 @@ public class Game {
 	}
 	public void setRound(){
 		round=round+1;
+	}
+	public int getDrawCoin() {
+		return drawCoin;
+	}
+	//비겼을때 코인저장
+	public void setDrawCoin(int drawCoin) {
+		this.drawCoin=drawCoin;
 	}
 
 	public String winner()
@@ -49,5 +57,6 @@ public class Game {
 		
 		//return user.getUserCoin()<=0 ? "ai가 승리하고 user가 졌습니다" : "user가 승리하고 ai가 졌습니다";
 	}
+	
 
 }

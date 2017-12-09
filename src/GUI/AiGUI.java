@@ -32,8 +32,8 @@ public class AiGUI extends JFrame implements GameGui {
       jlabel =new JLabel("");
       if(round<=10)
          icon=new ImageIcon(getClass().getResource("/image/2_"+list.get(round-1)+".png"));
-      else if(round>10)
-         icon=new ImageIcon(getClass().getResource("/image/2_"+list.get(round-10)+".png"));
+      else if(10<round)
+         icon=new ImageIcon(getClass().getResource("/image/2_"+list.get(round-11)+".png"));
       jlabel.setIcon(icon);
       icon.setImage(icon.getImage().getScaledInstance(180, 200, Image.SCALE_SMOOTH));
       jlabel.setBounds(10, 35, 250, 250);
