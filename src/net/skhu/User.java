@@ -13,7 +13,7 @@ public class User {
 
 	public User(){
 		cardList=Arrays.asList(1,2,3,4,5,6,7,8,9,10);
-		coin = 20;
+		coin = 30;
 		Collections.shuffle(cardList);
 	}
 

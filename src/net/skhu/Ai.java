@@ -14,7 +14,7 @@ public class Ai {
    public Ai(){
       cardList=Arrays.asList(1,2,3,4,5,6,7,8,9,10);
       usercardList = new ArrayList<>();
-      coin = 20;
+      coin = 30;
       Collections.shuffle(cardList);
    }
    public void aiRechargeDeck() {
@@ -28,6 +28,7 @@ public class Ai {
       usercardList.add(usercard);
    }
    public int getUserCard(Game game){
+	   
       return usercardList.get(game.getRound()-1);
    }
    public int number(Game game){
