@@ -32,7 +32,7 @@ public class MainFrame extends JFrame {
 	private User user;
 	private Ai ai;
 	private int aiBet;
-	private int userBet;
+	static int userBet;
 	private int aiDie;
 	private int totalAiBet;
 	private int totalUserBet;
@@ -41,13 +41,16 @@ public class MainFrame extends JFrame {
 	private JPanel panel;
 	Button button;
 
+	public static int getUserBet() {
+		return userBet;
+	}
+
 	public MainFrame(Game game) {
 		this.game = game;
 	}
 
 	// 게임시작 버튼 클릭시 화면 repaint
 	public void MainViewchange(JPanel panel) {
-
 		getContentPane().removeAll();
 		getContentPane().add(panel);
 		revalidate();
@@ -121,77 +124,66 @@ public class MainFrame extends JFrame {
 		panel.add(inCoin);
 		inCoin.setEnabled(false);
 
-		//배팅에서 입력 버튼 눌렀을때 이벤트, user가 배팅하면 그에따라 ai가 배팅 or 다이
+		// 배팅에서 입력 버튼 눌렀을때 이벤트, user가 배팅하면 그에따라 ai가 배팅 or 다이
 		betBtn.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
 				String s = inCoin.getText();
 				inCoin.setText("");
 				String msg = "User 배팅=" + s;
 				userBet = Integer.parseInt(s);
-				if(userBet<=0)
-				{
+				if (userBet <= 0) {
 					list.add("0이하로는 배팅할 수 없습니다. 다시 배팅해주세요");
-					return ;
+					return;
 				}
-
 				else {
 					// 총 유저가 배팅한 갯수
 					totalUserBet += userBet;
 
-					if(totalUserBet<totalAiBet && totalUserBet==game.getUser().getUserCard()) {
+					if (totalUserBet < totalAiBet && totalUserBet == game.getUser().getUserCard()) {
 						roundWinner();
 					}
-					//user가 ai가 배팅한 수보다 적게 못걸게 하기
-					else if(totalUserBet<totalAiBet) {
-						userLimitCoin(totalUserBet,totalAiBet);
-						totalUserBet -=userBet;
-
-
-					}
-					else if (userBet > game.getUser().getUserCoin() || totalUserBet > game.getUser().getUserCoin()) {
-						// 배팅 건 갯수가 더크다면
-						list.add("배팅 건 숫자 현재 보유한 코인 보다 더많습니다!");
-						list.add("다시 배팅");
+					// user가 ai가 배팅한 수보다 적게 못걸게 하기
+					else if (totalUserBet < totalAiBet) {
+						userLimitCoin(totalUserBet, totalAiBet);
 						totalUserBet -= userBet;
 
 					}
+					else if (userBet > game.getUser().getUserCoin() || totalUserBet > game.getUser().getUserCoin()) {
+						// 배팅 개수가 보유 코인수보다 크다면
+						list.add("배팅 건 숫자 현재 보유한 코인 보다 더많습니다!");
+						list.add("다시 배팅");
+						totalUserBet -= userBet;
+					}
 					else {
 						count++;
-						System.out.println("count수 세보기 "+count);
-						//ai가 배팅을 하였는데 user가 같은 수의 배팅을 하였을때 카드를 비교해서 승자 출력
-						if(((totalAiBet!=0&&totalUserBet!=0)&&totalAiBet==totalUserBet)) {
+						System.out.println("배팅 횟수: "+count);
+						// ai가 배팅을 하였는데 user가 같은 수의 배팅을 하였을때 카드를 비교해서 승자 출력
+						if (((totalAiBet != 0 && totalUserBet != 0) && totalAiBet == totalUserBet)) {
 							list.add(msg);
 							list.add("user와 ai가 총 배팅한 수가 같습니다.");
 							roundWinner();
 						}
-						//유저가 코인을 올인 하였고, ai가 배팅한 상태일때
-						else if(game.getUser().getUserCoin()==totalUserBet&&totalAiBet>0) {
+						// 유저가 코인을 올인 하였고, ai가 배팅한 상태일때
+						else if (game.getUser().getUserCoin() == totalUserBet && totalAiBet > 0) {
 							list.add(msg);
 							roundWinner();
 						}
 						else {
-							// *****************************************************************
 							System.out.println("유저 배팅값: " + userBet + " 유저토탈 배팅값: " + totalUserBet);
-							// *****************************************************************
 							list.add(msg);
 
-							if(count ==3) //추가배팅 3회로 하기
+							if (count == 3) // 추가배팅 3회로 하기
 							{
-								//                  list.add(game.winner());
-								//                  roundTwentyEnd(); //20라운드 되면  종료 시키기 ->라인 738
-								list.add("추가 배팅3회가 결과를 발표합니다!");
+								// list.add(game.winner());
+								// roundTwentyEnd(); //20라운드 되면 종료 시키기 ->라인 738
+								list.add("배팅횟수가 3회이므로 결과를 발표합니다!");
 								roundWinner();
-								count = 0;//0으로 초기화
-								return ;
-
+								count = 0;		// 0으로 초기화
+								return;
 							}
 							battleAiWithUser();
-
 						}
-
 					}
 				}
 			}
@@ -222,43 +214,45 @@ public class MainFrame extends JFrame {
 		});
 
 		// 계속 버튼 눌렀을 때 이벤트, 라운드가 바뀌고 카드 바뀜
-		cont.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (game.getRound() == 11) {
-					game.getAi().aiRechargeDeck();
-					game.getUser().userRechargeDeck();
-				}
-				betBtn.setEnabled(false);
-				inCoin.setEnabled(false);
-				game.setRound();
-				// 라운드가 끝났으니 유저의 카드 보여주기
-				// ai의 카드도 바꾸기
-				if (game.getRound() <= 20) {
-					usergui.im(game).removeAll();
-					// panel.remove(usergui.im(game));
-					panel.remove(aigui.im(game));
-					panel.add(aigui.changeView(game));
-					panel.add(usergui.changeView(game, 0));
-					changeText(game, 0);
-					panel.repaint();
-				} else if (game.getRound() > 20) {
-					list.add("");
-					list.add("게임이 끝났습니다");
-					list.add(game.winner());
-					roundTwentyEnd();
-				}
+	      cont.addActionListener(new ActionListener() {
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	            totalUserBet = 0;
+	            totalAiBet = 0;
+	            userBet = 0;
+	            aiBet = 0;
+	            count = 0;
+	            // 수정전
+//	            if (game.getRound() == 11) {
+//	               game.getAi().aiRechargeDeck();
+//	               game.getUser().userRechargeDeck();
+//	            }
+	            betBtn.setEnabled(false);
+	            inCoin.setEnabled(false);
+	            game.setRound();
+	            // 라운드가 끝났으니 유저의 카드 보여주기
+	            // ai의 카드도 바꾸기
+	            if (game.getRound() <= 20) {
+	               usergui.im(game).removeAll();
+	               // panel.remove(usergui.im(game));
+	               panel.remove(aigui.im(game));
+	               panel.add(aigui.changeView(game));
+	               panel.add(usergui.changeView(game, 0));
+	               changeText(game, 0);
+	               panel.repaint();
+	            } else if (game.getRound() > 20) {
+	               list.add("");
+	               list.add("게임이 끝났습니다");
+	               list.add(game.winner());
+	               roundTwentyEnd();
+	            }
 
-				totalUserBet = 0;
-				totalAiBet = 0;
-				userBet = 0;
-				aiBet = 0;
-				count = 0;
-			}
-		});
 
-		return panel;
-	}
+	         }
+	      });
+
+	      return panel;
+	   }
 
 	// 게임화면 밑에 나오는 글씨들
 	public void changeText(Game game, int check) {
@@ -268,7 +262,7 @@ public class MainFrame extends JFrame {
 			list.add(msg);
 		} else if (game.getRound() == 1) { // 1라운드 시작
 
-			int first =((int) (Math.random() * 2)) + 1;
+			int first = ((int) (Math.random() * 2)) + 1;
 			list.add("INDIAN 포커에 오신걸 환영합니다.");
 			list.add("\n");
 			list.add(String.format("%d라운드를 시작하겠습니다.", game.getRound()));
@@ -281,22 +275,26 @@ public class MainFrame extends JFrame {
 			list.add("\n");
 			list.add(betFirstMsg);
 
-			if (first == 1) // 사용자 배팅 시작
-			{
+			if (first == 1) {
+				// 사용자 배팅 시작
 				// 위에 버튼이벤트가 활성화되서 addActionListener가 실행
-			} else { // ai 배팅 시작
-				//            count += 1; // AI가 먼저 배팅을 하게 되면 count수를 1증가
+			}
+			else {
+				// ai 배팅 시작
+				// count += 1; // AI가 먼저 배팅을 하게 되면 count수를 1증가
 				battleAiWithUser();
 			}
 
-		} else if (game.getRound() > 1 && game.getRound() <= 20)// 10라운드 까지
+		}
+		else if (game.getRound() > 1 && game.getRound() <= 20)		// 20라운드 까지
 		{
 			if (game.exhaustion() == true) // 코인을 다쓰게 되면 승리자 판별하기
 			{
 				roundWinner();
 				list.add(game.coinExhaustion());
 				System.exit(0);
-			} else // 코인을 다 안썼다면
+			}
+			else // 코인을 다 안썼다면
 			{
 				int first = ((int) (Math.random() * 2)) + 1;
 				list.add("\n");
@@ -313,19 +311,14 @@ public class MainFrame extends JFrame {
 				if (first == 1) // 사용자 배팅 시작
 				{
 					// 위에 버튼이벤트가 활성화되서 addActionListener가 실행
-				} else {// ai 배팅 시작
-					//               count += 1; // AI가 먼저 배팅을 하게 되면 count수를 1증가
+				} else {
+					// ai 배팅 시작
+					// count += 1; // AI가 먼저 배팅을 하게 되면 count수를 1증가
 					battleAiWithUser();
-
 				}
-
-				// ********************************************
-				System.out.println(
-						"totalUserBet: " + totalUserBet + " userBet: " + userBet + " totalAiBet: " + totalAiBet);
-				// *******************************************
+				System.out.println("totalUserBet: " + totalUserBet + " userBet: " + userBet + " totalAiBet: " + totalAiBet);
 			}
 		}
-
 		else // 라운드 수가 20초과인 라운드 넘어가면
 			list.add(game.winner());
 	}
@@ -333,24 +326,23 @@ public class MainFrame extends JFrame {
 	// AI와 User배팅 싸움
 	public void battleAiWithUser() {
 		// aiBattingBattle이 aiDiePercentage보다 더크다면 -> 배팅할 확률이 더 크다면
-		if (game.getAi().aiBattingBattle(game.getUser().number(game), userBet) >= game.getAi()
-				.aiDiePercentage(game.getUser().number(game))) {
-
+		// 민국 - 수정한 부분
+		if(game.getAi().aiDiePercentage(game.getUser().number(game)) == 1) {
+		// 수정 전
+		// if (game.getAi().aiBattingBattle(game.getUser().number(game), userBet) >= game.getAi()
+		// .aiDiePercentage(game.getUser().number(game))) {
 			String ai = String.format("ai가 배팅한 코인 수는 -> %d",
 					aiBet = game.getAi().aiBattingBattle(game.getUser().number(game), userBet));
 			// 총 AI가 배팅한 갯수
-
 			totalAiBet += aiBet;
-
-
 
 			if (aiBet > game.getAi().getAiCoin() || totalAiBet > game.getAi().getAiCoin()) {
 				// 배팅 건 갯수가 더크다면
 				list.add("ai가 배팅을 자기 코인보다 많이 하려고 합니다!,ai 다시 배팅");
 				totalAiBet -= aiBet;
-				againBatting();  // -> 657
+				againBatting();
 				roundWinner();
-				return ;
+				return;
 			}
 			// user가 배팅을하였는데 ai가 총 배팅한 값과 같으면 카드값을 비교해서 결과를 출력해야 한다.
 			else if (((totalAiBet != 0 && totalUserBet != 0) && totalAiBet == totalUserBet)) {
@@ -393,11 +385,26 @@ public class MainFrame extends JFrame {
 		if (aiDie == 5) {
 			// 서로 배팅을 하지 않았는데, 에이아이가 다이 할때
 			if (aiBet == 0 && totalUserBet == 0) {
-				System.out.println("here");
 				// 유저가 코인하나를 먹고, 무승부 코인있으면 먹기
 				game.getUser().setCoin(game.getUser().getUserCoin() + 1 + game.getDrawCoin());
 				game.getAi().aiBetCoin(1);
 				count = 0; // 0으로초기화
+
+				// Add aiRemoveCard
+//				if(game.getRound() <= 10) {
+//					if(game.getAi().getAiRemoveCard().contains(game.getAi().number(game))) { }
+//					else game.getAi().setAiRemoveCard(game.getAi().number(game));
+//				}
+				if(game.getRound() <= 20) {
+					int count = 0;
+					for(int i=0; i < game.getAi().getAiRemoveCard().size(); ++i)
+						if(game.getAi().getAiRemoveCard().get(i) == game.getAi().number(game)) count++;
+					if(count >= 2) { }
+					else game.getAi().setAiRemoveCard(game.getAi().number(game));
+				}
+
+				System.out.println("라운드 :"+game.getRound());
+				System.out.println("ai 버린 덱: "+game.getAi().getAiRemoveCard());
 				list.add("유저가 승리했습니다!");
 
 				// 라운드가 끝났으니 유저의 카드 보여주기
@@ -414,6 +421,22 @@ public class MainFrame extends JFrame {
 				game.getUser().setCoin(game.getUser().getUserCoin() + 1 + game.getDrawCoin());
 				game.getAi().aiBetCoin(1);
 				count = 0; // 0으로초기화
+
+				// Add aiRemoveCard
+//				if(game.getRound() <= 10) {
+//					if(game.getAi().getAiRemoveCard().contains(game.getAi().number(game))) { }
+//					else game.getAi().setAiRemoveCard(game.getAi().number(game));
+//				}
+				if(game.getRound() <= 20) {
+					int count = 0;
+					for(int i=0; i < game.getAi().getAiRemoveCard().size(); ++i)
+						if(game.getAi().getAiRemoveCard().get(i) == game.getAi().number(game)) count++;
+					if(count >= 2) { }
+					else game.getAi().setAiRemoveCard(game.getAi().number(game));
+				}
+
+				System.out.println("라운드 :"+game.getRound());
+				System.out.println("ai 버린 덱: "+game.getAi().getAiRemoveCard());
 				list.add("유저가 승리했습니다!");
 
 				// 라운드가 끝났으니 유저의 카드 보여주기
@@ -432,9 +455,25 @@ public class MainFrame extends JFrame {
 			{
 				// AI가배팅건 코인들과 user가 그코인들을 가져가야 한다, 무승부코인있으면 먹기
 				game.getUser()
-				.setCoin(game.getUser().getUserCoin() - userBet + totalAiBet + userBet + game.getDrawCoin());
+						.setCoin(game.getUser().getUserCoin() - userBet + totalAiBet + userBet + game.getDrawCoin());
 				game.getAi().setCoin(game.getAi().getAiCoin() - totalAiBet);
 				count = 0; // 0으로초기화
+
+				// Add aiRemoveCard
+//				if(game.getRound() <= 10) {
+//					if(game.getAi().getAiRemoveCard().contains(game.getAi().number(game))) { }
+//					else game.getAi().setAiRemoveCard(game.getAi().number(game));
+//				}
+				if(game.getRound() <= 20) {
+					int count = 0;
+					for(int i=0; i < game.getAi().getAiRemoveCard().size(); ++i)
+						if(game.getAi().getAiRemoveCard().get(i) == game.getAi().number(game)) count++;
+					if(count >= 2) { }
+					else game.getAi().setAiRemoveCard(game.getAi().number(game));
+				}
+
+				System.out.println("라운드 :"+game.getRound());
+				System.out.println("ai 버린 덱: "+game.getAi().getAiRemoveCard());
 				list.add("유저가 승리했습니다!");
 
 				// 라운드가 끝났으니 유저의 카드 보여주기
@@ -465,11 +504,43 @@ public class MainFrame extends JFrame {
 		{
 			game.getUser().setCoin(game.getUser().getUserCoin() - 1);
 			game.getAi().setCoin(game.getAi().getAiCoin() + 1 + game.getDrawCoin());
+
+			// Add aiRemoveCard
+//			if(game.getRound() <= 10) {
+//				if(game.getAi().getAiRemoveCard().contains(game.getAi().number(game))) { }
+//				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+//			}
+			if(game.getRound() <= 20) {
+				int count = 0;
+				for(int i=0; i < game.getAi().getAiRemoveCard().size(); ++i)
+					if(game.getAi().getAiRemoveCard().get(i) == game.getAi().number(game)) count++;
+				if(count >= 2) { }
+				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+			}
+
+			System.out.println("라운드 :"+game.getRound());
+			System.out.println("ai 버린 덱: "+game.getAi().getAiRemoveCard());
 			list.add(String.format("die 하셨습니다 User코인이 %d 줄고 다음라운드로 넘어갑니다", 1));
 		} else // 내가 배팅을 한번이라도 걸고 다이를 눌렀다면
 		{
 			game.getUser().setCoin(game.getUser().getUserCoin() - totalUserBet);
 			game.getAi().setCoin(game.getAi().getAiCoin() + totalUserBet + game.getDrawCoin());
+
+			// Add aiRemoveCard
+//			if(game.getRound() <= 10) {
+//				if(game.getAi().getAiRemoveCard().contains(game.getAi().number(game))) { }
+//				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+//			}
+			if(game.getRound() <= 20) {
+				int count = 0;
+				for(int i=0; i < game.getAi().getAiRemoveCard().size(); ++i)
+					if(game.getAi().getAiRemoveCard().get(i) == game.getAi().number(game)) count++;
+				if(count >= 2) { }
+				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+			}
+
+			System.out.println("라운드 :"+game.getRound());
+			System.out.println("ai 버린 덱: "+game.getAi().getAiRemoveCard());
 			list.add(String.format("die 하셨습니다 User코인이 %d 줄고 다음라운드로 넘어갑니다", totalUserBet));
 
 		}
@@ -481,6 +552,23 @@ public class MainFrame extends JFrame {
 	public void gameWinRule() {
 		// user의 카드가 더크면!(user승)
 		if (game.getUser().number(game) > game.getAi().number(game)) {
+
+			// Add aiRemoveCard
+//			if(game.getRound() <= 10) {
+//				if(game.getAi().getAiRemoveCard().contains(game.getAi().number(game))) { }
+//				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+//			}
+			if(game.getRound() <= 20) {
+				int count = 0;
+				for(int i=0; i < game.getAi().getAiRemoveCard().size(); ++i)
+					if(game.getAi().getAiRemoveCard().get(i) == game.getAi().number(game)) count++;
+				if(count >= 2) { }
+				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+			}
+
+			System.out.println("라운드 :"+game.getRound());
+			System.out.println("ai 버린 덱: "+game.getAi().getAiRemoveCard());
+
 			list.add("\n");
 			list.add("user 카드가 ai의 카드보다 크므로 user 승리");
 
@@ -502,6 +590,23 @@ public class MainFrame extends JFrame {
 		}
 		// ai의 카드가 더크면!(ai승)
 		else if (game.getUser().number(game) < game.getAi().number(game)) {
+
+			// Add aiRemoveCard
+//			if(game.getRound() <= 10) {
+//				if(game.getAi().getAiRemoveCard().contains(game.getAi().number(game))) { }
+//				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+//			}
+			if(game.getRound() <= 20) {
+				int count = 0;
+				for(int i=0; i < game.getAi().getAiRemoveCard().size(); ++i)
+					if(game.getAi().getAiRemoveCard().get(i) == game.getAi().number(game)) count++;
+				if(count >= 2) { }
+				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+			}
+
+			System.out.println("라운드 :"+game.getRound());
+			System.out.println("ai 버린 덱: "+game.getAi().getAiRemoveCard());
+
 			list.add("\n");
 			list.add("ai 카드가 user의 카드보다 크므로 ai 승리");
 
@@ -524,6 +629,23 @@ public class MainFrame extends JFrame {
 		}
 		// ai의 카드와 user의 카드가 같으면(무승부)
 		else if (game.getUser().number(game) == game.getAi().number(game)) {
+
+			// Add aiRemoveCard
+//			if(game.getRound() <= 10) {
+//				if(game.getAi().getAiRemoveCard().contains(game.getAi().number(game))) { }
+//				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+//			}
+			if(game.getRound() <= 20) {
+				int count = 0;
+				for(int i=0; i < game.getAi().getAiRemoveCard().size(); ++i)
+					if(game.getAi().getAiRemoveCard().get(i) == game.getAi().number(game)) count++;
+				if(count >= 2) { }
+				else game.getAi().setAiRemoveCard(game.getAi().number(game));
+			}
+
+			System.out.println("라운드 :"+game.getRound());
+			System.out.println("ai 버린 덱: "+game.getAi().getAiRemoveCard());
+
 			list.add("\n");
 			list.add("ai 카드와 user가 카드가 같습니다");
 			list.add("이번 라운드 코인을 저장하고, 다음라운드 승자가 저장한 코인을 가져갑니다.");
@@ -655,11 +777,13 @@ public class MainFrame extends JFrame {
 		}
 
 	}
-	//추가배팅걸때 총 코인수보다 더놓게 걸기
+
+	// 추가배팅걸때 총 코인수보다 더놓게 걸기
 	public int againBatting() // ->339
 	{
 		// 두 수를 빼면 이 것 보다 이상 더걸게 해야한다
-		int rebet = (int)(Math.random()*(game.getAi().getAiCoin()-totalAiBet-totalUserBet-1))+Math.abs(totalUserBet - totalAiBet);
+		int rebet = (int) (Math.random() * (game.getAi().getAiCoin() - totalAiBet - totalUserBet - 1))
+				+ Math.abs(totalUserBet - totalAiBet);
 		list.add(String.format("ai가 배팅할 코인 수는  -> %d", rebet));
 		totalAiBet += rebet;
 		return rebet;

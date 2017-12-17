@@ -27,13 +27,21 @@ public class AiGUI extends JFrame implements GameGui {
 
    @Override
    public JLabel changeImage(List list,int round) {
-      // TODO Auto-generated method stub
-
       jlabel =new JLabel("");
-      if(round<=10)
-         icon=new ImageIcon(getClass().getResource("/image/2_"+list.get(round-1)+".png"));
-      else if(10<round)
-         icon=new ImageIcon(getClass().getResource("/image/2_"+list.get(round-11)+".png"));
+      if(list.get(round-1).equals(1)) icon=new ImageIcon(getClass().getResource("/image/2_1.png"));
+      else if(list.get(round-1).equals(2)) icon=new ImageIcon(getClass().getResource("/image/2_2.png"));
+      else if(list.get(round-1).equals(3)) icon=new ImageIcon(getClass().getResource("/image/2_3.png"));
+      else if(list.get(round-1).equals(4)) icon=new ImageIcon(getClass().getResource("/image/2_4.png"));
+      else if(list.get(round-1).equals(5)) icon=new ImageIcon(getClass().getResource("/image/2_5.png"));
+      else if(list.get(round-1).equals(6)) icon=new ImageIcon(getClass().getResource("/image/2_6.png"));
+      else if(list.get(round-1).equals(7)) icon=new ImageIcon(getClass().getResource("/image/2_7.png"));
+      else if(list.get(round-1).equals(8)) icon=new ImageIcon(getClass().getResource("/image/2_8.png"));
+      else if(list.get(round-1).equals(9)) icon=new ImageIcon(getClass().getResource("/image/2_9.png"));
+      else if(list.get(round-1).equals(10)) icon=new ImageIcon(getClass().getResource("/image/2_10.png"));
+//      if(round<=10)
+//         icon=new ImageIcon(getClass().getResource("/image/2_"+list.get(round-1)+".png"));
+//      else if(10<round)
+//         icon=new ImageIcon(getClass().getResource("/image/2_"+list.get(round-11)+".png"));
       jlabel.setIcon(icon);
       icon.setImage(icon.getImage().getScaledInstance(180, 200, Image.SCALE_SMOOTH));
       jlabel.setBounds(10, 35, 250, 250);
